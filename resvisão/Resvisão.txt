@@ -1,0 +1,161 @@
+Neuronio é uma pequena parte da rede 
+categoria 
+ 
+================================================== KERNAL ========================================================
+
+Todas as bolinhas vão para frente 
+tem 6 neuronios e 6 saida ou o que foi colocado 
+primerio camada recebe todos as polinhas 
+
+Max Flatten 
+pega o maior numero da imagem 
+ou menor
+ou medio
+1234      4
+5664      6 
+7898      9
+1112101   12
+
+        Camada que resbe todos os dados
+layers.input(shape=(28,28,3))
+
+        Tratando imagem 
+layers.input(28,28),
+layers.input(1./255),
+
+        Limpado a imagem
+layers.input(1./255)
+
+            achatar
+layers.Flatten(),
+
+            analise a imagem
+layers.Dense(64, activation=activations.relu, kernel_initializer=initializers.RandomNormal()),
+layers.Dropout(0.2),
+layers.Dense(64, activation=activations.relu, kernel_initializer=initializers.RandomNormal()),            
+
+primerio filtro com um pequeno e depois com uma peneria grande
+
+convolusão primerio depois o kernial
+assim não perde a qualidade
+
+ocultas são camadas onde a analise dos dados ela ficao no meio 
+
+===================================================== DANSE ========================================================
+criando uma camada de neuronios
+layers.Dense(
+    units  // quantidade de camadas
+    activation /// ativa tudo 
+    use_bies = true   
+    kernel_initializer="glorot_uniform",    # Tipo do inicializador dos pesos (opcional)
+    bias_initializer="zeros",               # Tipo do inicializador dos bias (opcional)
+    name=None                               # Nome da camada (opcional)
+)
+layers.Dense(128, activation='relu')
+
+pra não ocorrer ovenfiter
+desativar os neuronios mais influente e fazer os burros pensarem mais 
+usando  dropout desativa 20 neuronios
+    layers.Dropout(0.2),
+
+================================================== MaxPooling ========================================================
+
+layers.MaxPooling2D(
+    pool_size=(2, 2),   # Dimensão da pool
+    strides=None,       # Deslocamento, de quantos em quantos pixels a pool vai ser aplicada
+    padding='valid',    # Tipo da ação para as bordas
+) 
+
+# USE:
+layer.MaxPooling2D(pool_size=(3,3), strides=1, padding='same)
+
+================================================== ADAM ========================================================
+ele pode mudar seu resultado melhorando o peso 
+quantos ele anda pra achar o 0
+ele não é importante para saber o que ele faze
+
+melhor para imagem e videos
+
+rom tensorflow.keras import optimizers, losses, metrics
+
+lr = 0.001
+
+model.compile(
+    optimizer = optimizers.Adam(
+        learning_rate = lr    
+    ),
+    loss = losses.SparseCategoricalCrossentropy(), // ele faz o lebouencoder ele espera uma onehot mas ele já lembra 
+    metrics = [ metrics.sparse_categorical_accuracy ] // aqui pede uma metrica de accuracy // metricas de categotria 
+)
+RMSprop	Parecido com Adam, usado muito em redes recorrentes. utiliza mais para texto
+
+
+
+from tensorflow.keras import utils
+
+path = './Data'
+batch_size = 64  // quanto maior melhor mais não pode passar  // tamanho de cada betch  ele vai atrubuir 64 imagem por cada batch
+
+train = utils.image_dataset_from_directory(
+    directory=path + '/Train',
+    shuffle = True,
+    seed = 1,
+    subset = 'training',
+    validation = 0.1,
+    image_size = (28,28),
+    batch_size = batch_size
+)
+
+test = utils.image_dataset_from_directory(
+    directory=path + '/Test',
+    shuffle = True,
+    seed = 1,
+    subset = 'validation',
+    validation = 0.1,
+    image_size = (28,28),
+    batch_size = batch_size
+)
+================================================== TREINAMENTO DO MODELO ==================================================
+
+from tensorflow.keras import callbacks
+
+patience = 5  ///e tipo a tolerancia de epocas com piores valores se não melhorar ele para de treinar
+epochs = 100
+
+model.fit(
+    train,
+    validation_data = test,
+    epochs = epochs,
+    verbose = True,
+    
+    callbacks = [
+        callbacks.EarlyStopping(
+            monitor = 'val_loss',
+            patience = patience,
+            verbose = True
+        )
+    ]
+)
+
+
+model.fit(
+    train,
+    validation_data = test,
+    epochs = epochs,
+    verbose = True,
+    
+    callbacks = [
+        callbacks.EarlyStopping(
+            monitor = 'val_loss',
+            patience = patience,
+            verbose = 1
+        ),
+        callbacks .ModelCheckpoint( // esse em especifico salva o modelo 
+            filepath = model_path,
+            save_weights_only = False,
+            monitor = 'loss', // que tem a menor perda para salvar // pode salvar por melhor 
+            mode = 'min', //
+            save_best_only = True
+        )
+    ]
+)
