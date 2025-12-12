@@ -7,7 +7,10 @@ __pycache__/
 *.so
 *.zip
 **/Data/
+**/outroData/
+
 venv
+
 
 # Distribution / packaging
 .Python
